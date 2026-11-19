@@ -35,3 +35,7 @@ The home page says "Good Morning / Afternoon / Evening" on the viewer's clock. T
 ## Who can open it
 
 Only the people in `CONTACTS` (`src/Code.gs`). Everyone else gets a "You don't have access" page, and `getData()` refuses them too. To give someone access, add their email and first name to `CONTACTS`, then push and redeploy.
+
+## Source control
+
+Code lives in the private repo https://github.com/edmondlemmo/influencer-dashboard (branch `main`). After changing `src/`, commit and push to GitHub as well as `clasp push` + redeploy, so the repo matches what's live.
