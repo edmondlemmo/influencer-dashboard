@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Influencer performance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue-top: #0068D6;
+    --blue-bottom: #002C66;
+    --ink: #FFFFFF;
+    --ink-soft: rgba(255,255,255,0.78);
+    --ink-faint: rgba(255,255,255,0.55);
+    --ink-ghost: rgba(255,255,255,0.32);
+    --panel: rgba(255,255,255,0.14);
+    --panel-hover: rgba(255,255,255,0.22);
+    --well: rgba(0, 24, 60, 0.35);
+    --pin: #0E3A78;
+    --rule: rgba(255,255,255,0.22);
+    --on: #19E68C;
+    --amber: #FFB547;
+    --sky: #8CC8FF;
+    --error: #FFC9BF;
+    --buy: #1E90FF;
+    --sell: #F8DE7E;
+    --alert: #B3122E;
+    --font: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+    --ease-in-soft: cubic-bezier(0.22, 1, 0.36, 1);
+    color-scheme: light;
+    box-sizing: border-box;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --blue-top: #005BC0; --blue-bottom: #00234F; color-scheme: dark; }
+  }
+  :root[data-theme="dark"] { --blue-top: #005BC0; --blue-bottom: #00234F; color-scheme: dark; }
+  *, *::before, *::after { box-sizing: inherit; }
+  html, body { margin: 0; min-height: 100%; }
+  html { scrollbar-gutter: stable; zoom: 0.9; }
+  body {
+    min-height: calc(100vh / 0.9);
+    font-family: var(--font); color: var(--ink);
+    background: linear-gradient(180deg, var(--blue-top) 0%, var(--blue-bottom) 100%) fixed;
+    background-color: var(--blue-bottom);
+    -webkit-font-smoothing: antialiased;
+  }
+  button { font-family: inherit; color: inherit; }
+  a { color: var(--ink); }
+  :focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; border-radius: 6px; }
+
+  /* Top bar */
+  .top { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 56px clamp(20px, 4.5vw, 86px) 0; }
+  .nav { display: flex; gap: clamp(18px, 3vw, 58px); overflow-x: auto; scrollbar-width: none; }
+  .nav::-webkit-scrollbar { display: none; }
+  .nav button { background: none; border: 0; padding: 4px 0; font-size: 20px; font-weight: 600; color: var(--ink-faint); cursor: pointer; white-space: nowrap; transition: color 150ms ease; }
+  .nav button:hover { color: var(--ink-soft); }
+  .nav button[aria-current="page"] { color: var(--ink); }
+  .nav { gap: 8px; }
+  .nav button { padding: 9px 20px; border-radius: 999px; background: var(--panel); color: var(--ink); font-size: 17px; transition: background-color 150ms ease, color 150ms ease; }
+  .nav button:hover { background: var(--panel-hover); color: var(--ink); }
+  .nav button[aria-current="page"] { background: rgba(255,255,255,0.92); color: var(--blue-bottom); }
+  .logo-btn { background: none; border: 0; padding: 0; cursor: pointer; flex-shrink: 0; }
+  .logo { height: 44px; width: auto; display: block; }
+
+  /* Page */
+  .page { width: min(1180px, 100%); margin: 0 auto; padding: clamp(32px, 6vh, 72px) clamp(20px, 4.5vw, 40px) 140px; display: flex; flex-direction: column; gap: 22px; }
+  .page--home { width: min(1180px, 100%); min-height: calc(100vh / 0.9 - 110px); justify-content: center; padding-top: 24px; }
+  .hero { margin: 0; font-size: clamp(32px, 4vw, 56px); font-weight: 300; letter-spacing: -0.01em; line-height: 1.15; }
+  .sub { margin: -6px 0 18px; font-size: 17px; line-height: 1.55; color: var(--ink-soft); max-width: 760px; }
+  .overline { margin: 14px 0 -8px; font-size: 13px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-faint); }
+
+  /* Home choice tiles */
+  .choices { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; margin-top: 26px; }
+  @media (max-width: 900px) { .choices { grid-template-columns: minmax(0, 1fr); } }
+  .choice { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; text-align: left; background: var(--panel); border: 0; border-radius: 16px; padding: 28px 30px; cursor: pointer; transition: background-color 200ms ease, transform 200ms ease; }
+  .choice:hover { background: var(--panel-hover); transform: translateY(-2px); }
+  .page--home .hero { text-align: center; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .choice { align-items: center; text-align: center; padding: 48px 32px; gap: 20px; }
+  .choice__title { justify-content: center; white-space: nowrap; font-size: clamp(17px, 1.7vw, 22px); line-height: 1.3; }
+  .choice__icon { width: 44px; height: 44px; border-radius: 12px; background: rgba(255,255,255,0.92); color: var(--blue-bottom); display: grid; place-items: center; }
+  .choice__icon svg { width: 24px; height: 24px; }
+  .choice__title { font-size: 22px; font-weight: 600; display: inline-flex; align-items: center; gap: 10px; }
+  .choice__title svg { width: 18px; height: 18px; transition: transform 200ms var(--ease); }
+  .choice:hover .choice__title svg { transform: translateX(3px); }
+  .choice__desc { font-size: 16px; line-height: 1.5; color: var(--ink-soft); margin: 0; }
+  .choice__meta { margin-top: auto; padding-top: 6px; font-size: 14px; font-weight: 600; color: var(--ink-faint); }
+  .home-foot { margin-top: 18px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; font-size: 15px; color: var(--ink-faint); }
+  .refresh { display: inline-flex; align-items: center; gap: 8px; border: 0; border-radius: 999px; background: transparent; box-shadow: inset 0 0 0 1.5px rgba(255,255,255,0.6); color: var(--ink); font-size: 14px; font-weight: 600; padding: 7px 14px 7px 11px; cursor: pointer; transition: background-color 150ms ease; }
+  .refresh:hover { background: rgba(255,255,255,0.12); }
+  .refresh svg { width: 16px; height: 16px; }
+  .refresh.busy svg { animation: spin 900ms linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* KPI tiles */
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; }
+  .kpi { display: flex; flex-direction: column; gap: 8px; background: var(--panel); border-radius: 16px; padding: 24px 28px; }
+  .kpi__label { font-size: 15px; font-weight: 600; color: var(--ink-faint); }
+  .kpi__value { font-size: clamp(30px, 3vw, 42px); font-weight: 300; letter-spacing: -0.01em; line-height: 1.1; }
+  .kpi__note { font-size: 14px; font-weight: 600; color: var(--ink-soft); line-height: 1.45; }
+  .meter { height: 8px; border-radius: 999px; background: rgba(255,255,255,0.12); overflow: hidden; margin-top: 4px; }
+  .meter > div { height: 100%; border-radius: 999px; background: var(--on); transform-origin: left; animation: grow 900ms var(--ease-in-soft) 200ms backwards; }
+
+  /* Cards */
+  .card { display: flex; flex-direction: column; gap: 18px; background: var(--panel); border-radius: 16px; padding: 26px 28px; min-width: 0; }
+  .card h2 { margin: 0; font-size: 26px; font-weight: 600; }
+  .card--bare { background: transparent; padding: 0; }
+  .card__head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 24px; }
+  .card__desc { margin: 6px 0 0; font-size: 16px; line-height: 1.55; color: var(--ink-soft); }
+  .grid2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; }
+  @media (max-width: 900px) { .grid2 { grid-template-columns: minmax(0, 1fr); } }
+
+  /* Highlights */
+  .highlights { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+  .highlights li { background: var(--well); border-radius: 12px; padding: 18px 20px; display: flex; flex-direction: column; gap: 6px; }
+  .hl__label { font-size: 13px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-faint); }
+  .hl__name { font-size: 22px; font-weight: 600; }
+  .hl__text { font-size: 15px; line-height: 1.5; color: var(--ink-soft); }
+
+  /* Chips */
+  .chips { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; }
+  .chips::-webkit-scrollbar { display: none; }
+  .chip { flex: 0 0 auto; white-space: nowrap; border: 0; border-radius: 999px; background: var(--panel); color: var(--ink); font-size: 14px; font-weight: 400; padding: 8px 14px; cursor: pointer; transition: background-color 150ms ease; }
+  .chip:hover { background: var(--panel-hover); }
+  .chip[aria-pressed="true"] { background: rgba(255,255,255,0.92); color: var(--blue-bottom); font-weight: 600; }
+  .controls { display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: center; }
+  .controls__label { font-size: 13px; font-weight: 600; color: var(--ink-faint); margin-right: 4px; }
+  .controls > div { display: flex; align-items: center; gap: 8px; min-width: 0; }
+
+  /* Ranked bars */
+  .bars { display: flex; flex-direction: column; gap: 12px; padding: 18px 20px; border-radius: 12px; background: linear-gradient(180deg, rgba(0,20,52,0.55) 0%, rgba(0,20,52,0.25) 100%); }
+  .bars .track { background: rgba(255,255,255,0.08); }
+  .bars .fill--buy { background: linear-gradient(90deg, #5AAEFF 0%, var(--buy) 100%); }
+  .bars .fill--sell { background: linear-gradient(90deg, #FFF0B8 0%, var(--sell) 100%); }
+  .barrow { display: grid; grid-template-columns: minmax(120px, 190px) minmax(0, 1fr) minmax(70px, auto); align-items: center; gap: 14px; font-size: 15px; }
+  .barrow__name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .barrow b { font-weight: 600; text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .track { height: 12px; border-radius: 999px; background: rgba(255,255,255,0.10); overflow: hidden; }
+  .fill { height: 100%; border-radius: 999px; background: var(--ink); transform-origin: left; animation: grow 800ms var(--ease-in-soft) backwards; }
+  .fill--tiktok { background: var(--ink); }
+  .fill--facebook { background: var(--sky); }
+  .still .fill, .still .meter > div { animation: none; }
+  @keyframes grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  .legend { display: flex; flex-wrap: wrap; gap: 16px; font-size: 14px; color: var(--ink-soft); }
+  .legend span { display: inline-flex; align-items: center; gap: 8px; }
+  .legend i { width: 12px; height: 12px; border-radius: 4px; background: var(--ink); }
+  .note { font-size: 14px; color: var(--ink-faint); margin: 0; }
+
+  /* Platform compare */
+  .plat { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+  .plat__col { background: var(--well); border-radius: 12px; padding: 20px 22px; display: flex; flex-direction: column; gap: 12px; }
+  .plat__name { display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 600; }
+  .plat__name i { width: 12px; height: 12px; border-radius: 4px; }
+  .plat dl { margin: 0; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 16px; font-size: 15px; }
+  .plat dt { color: var(--ink-soft); }
+  .plat dd { margin: 0; text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .verdict { margin: 0; font-size: 17px; line-height: 1.55; color: var(--ink); }
+
+  /* Timeline */
+  .tl { display: flex; flex-direction: column; gap: 10px; }
+  .tl__axis, .tl__row { display: grid; grid-template-columns: minmax(120px, 190px) minmax(0, 1fr); gap: 14px; align-items: center; }
+  .tl__months { position: relative; height: 18px; font-size: 13px; font-weight: 600; color: var(--ink-faint); }
+  .tl__months span { position: absolute; top: 0; white-space: nowrap; }
+  .tl__name { font-size: 15px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tl__lane { position: relative; display: flex; flex-direction: column; gap: 4px; padding: 6px 0; border-radius: 8px; background: rgba(255,255,255,0.06); }
+  .tl__bar { position: relative; height: 10px; }
+  .tl__bar > i { position: absolute; top: 0; bottom: 0; border-radius: 999px; background: var(--ink); }
+  .tl__today { position: absolute; top: -4px; bottom: -4px; width: 2px; background: var(--amber); border-radius: 2px; }
+
+  /* Tables */
+  .well { overflow-x: auto; border-radius: 10px; background: var(--pin); scrollbar-width: none; }
+  .well::-webkit-scrollbar { display: none; }
+  .well th:nth-child(-n+2), .well td:nth-child(-n+2) { position: sticky; z-index: 1; background: var(--pin); }
+  .well table { table-layout: fixed; min-width: calc(var(--cols, 10) * 112px); }
+  .well th, .well td { white-space: normal; overflow-wrap: break-word; }
+  .well .spill, .well .pchip, .well .tag, .well .status { white-space: nowrap; }
+  .well th:first-child, .well td:first-child { left: 0; }
+  .well th:nth-child(2), .well td:nth-child(2) { left: var(--c1, 112px); }
+  table { width: 100%; border-collapse: collapse; }
+  th { text-align: left; font-size: 13px; font-weight: 700; color: var(--ink-soft); padding: 12px 14px; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+  td { font-size: 14px; padding: 11px 14px; border-bottom: 1px solid var(--rule); line-height: 1.45; white-space: nowrap; }
+  tbody tr:last-child td { border-bottom: 0; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  tr.main { cursor: pointer; transition: background-color 150ms ease; }
+  tr.main:hover { background: rgba(255,255,255,0.06); }
+  .well tr.main:hover td { background: #17478A; }
+  tr.main td:first-child { font-weight: 600; }
+  .expander { display: inline-flex; align-items: center; gap: 8px; background: none; border: 0; padding: 0; font-size: 14px; font-weight: 600; cursor: pointer; text-align: left; }
+  .expander svg { width: 14px; height: 14px; transition: transform 200ms var(--ease); flex-shrink: 0; }
+  .expander[aria-expanded="true"] svg { transform: rotate(90deg); }
+  tr.sub td { color: var(--ink-soft); background: rgba(0,16,40,0.25); font-size: 13px; }
+  tr.sub td:first-child { padding-left: 36px; }
+  tr.total td { font-weight: 700; border-top: 1px solid var(--rule); }
+  .status { display: inline-flex; align-items: center; gap: 8px; }
+  .status::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--on); }
+  .status--upcoming::before { background: var(--amber); }
+  .status--finished::before { background: var(--ink-ghost); }
+  .tag { display: inline-block; font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 999px; background: rgba(255,255,255,0.14); }
+  .tag--buy { color: var(--buy); }
+  .tag--sell { color: var(--sell); }
+  .tag--test { color: var(--amber); }
+  .fill--buy { background: var(--buy); }
+  .fill--sell { background: var(--sell); }
+  .fill--test { background: var(--amber); }
+  .legend i.fill--buy { background: var(--buy); }
+  .legend i.fill--sell { background: var(--sell); }
+  .legend i.fill--test { background: var(--amber); }
+  .status--warn { background: var(--alert); color: #FFFFFF; font-weight: 700; cursor: help; padding: 3px 10px 3px 8px; border-radius: 999px; }
+  .status--warn::before { background: #FFFFFF; }
+  .warning { background: var(--alert); border-radius: 10px; padding: 16px 20px; font-size: 15px; line-height: 1.55; color: #FFFFFF; display: flex; flex-direction: column; gap: 6px; box-shadow: 0 6px 22px rgba(60,0,10,0.35); }
+  .warning__title { font-weight: 700; font-size: 17px; color: #FFFFFF; display: inline-flex; align-items: center; gap: 8px; }
+  .warning__title::before { content: "!"; display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: #FFFFFF; color: var(--alert); font-weight: 800; font-size: 14px; }
+  .warning ul { margin: 0; padding-left: 20px; }
+  .home-warn { margin-top: 18px; }
+  .prows { display: flex; flex-direction: column; border-radius: 12px; background: var(--well); overflow: hidden; }
+  .prow { display: grid; grid-template-columns: minmax(150px, 1.2fr) 150px minmax(0, 1.3fr) 190px 20px; align-items: center; gap: 16px; width: 100%; padding: 14px 18px; border: 0; border-bottom: 1px solid var(--rule); background: transparent; text-align: left; cursor: pointer; transition: background-color 150ms ease; }
+  .prow:last-child { border-bottom: 0; }
+  .prow:hover { background: rgba(255,255,255,0.06); }
+  .prow__name { font-size: 17px; font-weight: 600; }
+  .prow__chips { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .prow__dates { display: flex; gap: 18px; font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .prow__dates em { display: block; font-style: normal; font-size: 12px; font-weight: 600; color: var(--ink-faint); }
+  .prow__go { color: var(--ink-faint); display: grid; place-items: center; transition: transform 200ms var(--ease), color 150ms ease; }
+  .prow__go svg { width: 18px; height: 18px; }
+  .prow:hover .prow__go { color: var(--ink); transform: translateX(3px); }
+  .prow .pchip { font-size: 13px; padding: 4px 11px; gap: 6px; }
+  .prow .spill { font-size: 12px; padding: 4px 10px; }
+  @media (max-width: 760px) {
+    .prow { grid-template-columns: minmax(0, 1fr) auto; gap: 8px 12px; }
+    .prow__chips, .prow__dates { grid-column: 1; }
+    .prow__go { grid-column: 2; grid-row: 1 / span 3; }
+  }
+  .ptop { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 22px; align-items: start; }
+  .ptop__left { display: flex; flex-direction: column; gap: 22px; min-width: 0; }
+  .ptop__right { min-width: 0; }
+  .ptop { align-items: stretch; }
+  .popwrap { position: relative; display: inline-flex; cursor: help; border-radius: 999px; }
+  .popwrap__pill { font-size: 14px; padding: 6px 14px; }
+  .popout { position: absolute; top: calc(100% + 10px); left: 0; z-index: 30; width: min(560px, 86vw); opacity: 0; transform: translateY(6px); pointer-events: none; transition: opacity 160ms ease, transform 200ms var(--ease); }
+  .popout .card { background: rgba(0,32,76,0.97); box-shadow: 0 10px 28px rgba(0,0,0,0.3); }
+  .popwrap:hover .popout, .popwrap:focus-within .popout { opacity: 1; transform: none; pointer-events: auto; }
+  .ptop__right { display: flex; flex-direction: column; }
+  .ptop .creatives { flex: 1; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); align-items: stretch; }
+  .ptop .ctile { height: 100%; }
+  .cswitch { flex: 1; display: flex; flex-direction: column; gap: 12px; }
+  .cswitch__tabs { flex-wrap: wrap; }
+  .creatives--one { grid-template-columns: minmax(0, 1fr) !important; }
+  .cpane { display: flex; flex-direction: column; }
+  .cpane[hidden] { display: none; }
+  .ptop .clink { flex: 1; height: auto; min-height: 220px; }
+  .kpis--side { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width: 900px) { .ptop { grid-template-columns: minmax(0, 1fr); } }
+  .creatives { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; align-items: start; }
+  .ctile { background: var(--well); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 12px; }
+  .ctile__head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .ctile__open { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; color: var(--ink); text-decoration: none; }
+  .ctile__open svg { width: 15px; height: 15px; }
+  .ctile__open:hover { text-decoration: underline; text-underline-offset: 3px; }
+  .cframe { display: block; width: 100%; max-width: 340px; margin: 0 auto; border: 0; border-radius: 10px; background: #FFFFFF; }
+  .cframe--meta { height: 600px; }
+  .cframe--tiktok { height: 560px; background: #000000; }
+  .clink { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; height: 220px; border-radius: 10px; background: rgba(0,16,40,0.45); color: var(--ink); text-decoration: none; font-size: 15px; font-weight: 600; text-align: center; padding: 20px; transition: background-color 150ms ease; }
+  .clink:hover { background: rgba(0,16,40,0.65); }
+  .clink svg { width: 44px; height: 44px; }
+  .ctile__meta { margin: 0; font-size: 14px; line-height: 1.5; color: var(--ink-soft); }
+  .pcards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+  .pcard { display: flex; flex-direction: column; gap: 10px; text-align: left; background: var(--well); border: 0; border-radius: 12px; padding: 18px 20px; cursor: pointer; transition: background-color 200ms ease, transform 200ms ease; }
+  .pcard:hover { background: rgba(0,24,60,0.55); transform: translateY(-2px); }
+  .pcard__top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+  .pcard__name { font-size: 20px; font-weight: 600; line-height: 1.25; }
+  .pcard__chips { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .pcard__meta { font-size: 14px; color: var(--ink-soft); line-height: 1.45; }
+  .pcard__go { margin-top: auto; display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: var(--ink-faint); }
+  .pcard__go svg { width: 16px; height: 16px; transition: transform 200ms var(--ease); }
+  .pcard:hover .pcard__go { color: var(--ink); }
+  .pcard:hover .pcard__go svg { transform: translateX(3px); }
+  .pchip { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 999px; background: var(--panel); font-size: 15px; font-weight: 600; white-space: nowrap; }
+  .pchip i { width: 10px; height: 10px; border-radius: 50%; }
+  .pchip--sm, .pcard .pchip { font-size: 13px; padding: 4px 11px; gap: 6px; }
+  .spill { display: inline-flex; align-items: center; gap: 7px; flex-shrink: 0; padding: 6px 14px; border-radius: 999px; font-size: 14px; font-weight: 700; white-space: nowrap; background: var(--panel); color: var(--ink-soft); }
+  .spill::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--ink-ghost); }
+  .spill--live { background: var(--on); color: var(--blue-bottom); }
+  .spill--live::before { background: var(--blue-bottom); animation: pulse 1.8s ease-in-out infinite; }
+  .spill--upcoming { background: var(--amber); color: var(--blue-bottom); }
+  .spill--upcoming::before { background: var(--blue-bottom); }
+  .spill--warn { background: var(--alert); color: #FFFFFF; cursor: help; }
+  .spill--warn::before { background: #FFFFFF; }
+  .pcard .spill, td .spill { font-size: 12px; padding: 4px 10px; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+  .who { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 22px; }
+  .who__chips { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .back { align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; background: var(--panel); border: 0; border-radius: 999px; padding: 8px 16px 8px 12px; font-size: 15px; font-weight: 600; cursor: pointer; transition: background-color 150ms ease; margin-bottom: -6px; }
+  .back:hover { background: var(--panel-hover); }
+  .back svg { width: 18px; height: 18px; }
+  .rowlink, button.barrow__name { display: inline-flex; align-items: center; gap: 6px; background: none; border: 0; padding: 0; font: inherit; font-weight: 600; color: var(--ink); cursor: pointer; text-align: left; }
+  button.barrow__name { display: block; }
+  .rowlink svg { width: 12px; height: 12px; opacity: 0.5; transition: transform 200ms var(--ease), opacity 150ms ease; }
+  tr.main:hover .rowlink svg { opacity: 1; transform: translateX(3px); }
+  button.barrow__name:hover { text-decoration: underline; text-underline-offset: 3px; }
+  .paces { display: flex; flex-direction: column; gap: 14px; }
+  .pace { background: var(--well); border-radius: 12px; padding: 18px 20px; display: flex; flex-direction: column; gap: 12px; }
+  .pace__top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+  .pace__name { font-size: 20px; font-weight: 600; }
+  .pace__meta { display: block; font-size: 14px; color: var(--ink-faint); font-weight: 600; margin-top: 2px; }
+  .pace__pill { flex-shrink: 0; font-size: 14px; font-weight: 700; padding: 6px 14px; border-radius: 999px; background: var(--panel); }
+  .pace__pill--ontrack { background: var(--on); color: var(--blue-bottom); }
+  .pace__pill--behind { background: var(--alert); color: #FFFFFF; }
+  .pace__pill--ahead { background: var(--amber); color: var(--blue-bottom); }
+  .pace__track { position: relative; height: 14px; border-radius: 999px; background: rgba(255,255,255,0.12); }
+  .pace__who { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+  .pace__exp { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 999px; background: repeating-linear-gradient(90deg, rgba(25,230,140,0.5) 0 8px, transparent 8px 13px); }
+  .pace__fill { position: relative; height: 100%; border-radius: 999px; background: var(--on); transform-origin: left; animation: grow 900ms var(--ease-in-soft) 200ms backwards; }
+  .pace__mark { position: absolute; top: -5px; bottom: -5px; width: 3px; margin-left: -1.5px; border-radius: 2px; background: var(--amber); }
+  .pace__nums { margin: 0; display: flex; flex-wrap: wrap; gap: 10px 28px; }
+  .pace__nums dt { font-size: 13px; font-weight: 600; color: var(--ink-faint); }
+  .pace__nums dd { margin: 2px 0 0; font-size: 17px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .pace__text { margin: 0; font-size: 15px; line-height: 1.5; color: var(--ink-soft); }
+  .still .pace__fill { animation: none; }
+  .intro .home-warn { animation: rise 800ms var(--ease-in-soft) 600ms backwards; }
+  .over { color: var(--error); font-weight: 700; }
+
+  /* Floating help pill + glossary */
+  .float { position: fixed; right: clamp(20px, 4.5vw, 86px); bottom: clamp(20px, 3vw, 40px); z-index: 40; display: inline-flex; align-items: center; gap: 10px; background: var(--panel); border: 0; border-radius: 999px; padding: 11px 20px; font-size: 16px; font-weight: 600; cursor: pointer; transition: background-color 200ms ease, box-shadow 200ms ease; backdrop-filter: blur(6px); }
+  .float:hover { background: var(--panel-hover); }
+  .float.solid { background: #1F5296; box-shadow: 0 6px 22px rgba(0,16,40,0.45); }
+  .float { width: 44px; height: 44px; padding: 0; justify-content: center; }
+  .float svg { width: 22px; height: 22px; }
+  .float--refresh { right: calc(clamp(20px, 4.5vw, 86px) + 54px); }
+  .float--alerts { right: calc(clamp(20px, 4.5vw, 86px) + 108px); }
+  .float--alarm, .float--alarm.solid, .float--alarm:hover { background: var(--alert); box-shadow: 0 6px 22px rgba(60,0,10,0.4); }
+  .float--alarm svg { animation: ring 2.4s ease-in-out infinite; transform-origin: 50% 10%; }
+  @keyframes ring { 0%, 70%, 100% { transform: rotate(0); } 74% { transform: rotate(14deg); } 80% { transform: rotate(-12deg); } 86% { transform: rotate(8deg); } 92% { transform: rotate(-4deg); } }
+  .badge { position: absolute; top: -4px; right: -4px; min-width: 20px; height: 20px; padding: 0 5px; border-radius: 999px; background: #FFFFFF; color: var(--alert); font-size: 12px; font-weight: 800; display: grid; place-items: center; }
+  .alerts .notes { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+  .note-item { display: flex; flex-direction: column; gap: 4px; padding: 12px 14px; border-radius: 10px; background: rgba(255,255,255,0.08); font-size: 15px; line-height: 1.5; color: var(--ink-soft); }
+  .note-item__title { font-weight: 700; color: var(--ink); display: inline-flex; align-items: center; gap: 8px; }
+  .note-item__title::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--sky); }
+  .note-item--error { background: var(--alert); color: #FFFFFF; }
+  .note-item--error .note-item__title::before { background: #FFFFFF; }
+  .note-item--ok .note-item__title::before { background: var(--on); }
+  .float--refresh.busy svg { animation: spin 900ms linear infinite; }
+  .gloss { position: fixed; right: clamp(20px, 4.5vw, 86px); bottom: calc(clamp(20px, 3vw, 40px) + 60px); z-index: 41; width: min(420px, calc(100vw - 40px)); max-height: 70vh; overflow-y: auto; background: rgba(0,32,76,0.97); border-radius: 12px; padding: 22px 24px; box-shadow: 0 10px 28px rgba(0,0,0,0.3); opacity: 0; transform: translateY(8px); pointer-events: none; transition: opacity 180ms ease, transform 220ms var(--ease); }
+  .gloss.open { opacity: 1; transform: none; pointer-events: auto; }
+  .gloss h3 { margin: 0 0 14px; font-size: 20px; font-weight: 600; }
+  .gloss dl { margin: 0; display: flex; flex-direction: column; gap: 14px; }
+  .gloss dt { font-size: 15px; font-weight: 700; }
+  .gloss dd { margin: 3px 0 0; font-size: 15px; line-height: 1.5; color: var(--ink-soft); }
+  .gloss dd em { font-style: normal; color: var(--ink-faint); }
+
+  .foot { font-size: 14px; color: var(--ink-faint); margin-top: 8px; }
+  .loading { font-size: 17px; color: var(--ink-faint); text-align: center; padding: 120px 0; }
+
+  /* Motion */
+  .intro .hero, .intro .sub { animation: drop 700ms var(--ease-in-soft) 80ms backwards; }
+  .intro .choice { animation: rise 800ms var(--ease-in-soft) backwards; }
+  .intro .choice:nth-child(1) { animation-delay: 320ms; }
+  .intro .choice:nth-child(2) { animation-delay: 420ms; }
+  .intro .choice:nth-child(3) { animation-delay: 520ms; }
+  .intro .home-foot { animation: rise 800ms var(--ease-in-soft) 620ms backwards; }
+  @keyframes drop { from { opacity: 0; transform: translateY(-24px); } to { opacity: 1; transform: none; } }
+  @keyframes rise { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: none; } }
+  .leave-fwd { opacity: 0; transform: translateX(-56px); transition: opacity 200ms ease-in, transform 200ms ease-in; }
+  .leave-back { opacity: 0; transform: translateX(56px); transition: opacity 200ms ease-in, transform 200ms ease-in; }
+  .enter-fwd { animation: inFwd 380ms var(--ease-in-soft) backwards; }
+  .enter-back { animation: inBack 380ms var(--ease-in-soft) backwards; }
+  @keyframes inFwd { from { opacity: 0; transform: translateX(56px); } to { opacity: 1; transform: none; } }
+  @keyframes inBack { from { opacity: 0; transform: translateX(-56px); } to { opacity: 1; transform: none; } }
+  .swap { transition: opacity 240ms ease; }
+  .swap.out { opacity: 0; transition-duration: 160ms; }
+  @media (prefers-reduced-motion: reduce) {
+    .intro .hero, .intro .sub, .intro .choice, .intro .home-foot, .enter-fwd, .enter-back { animation: fade 300ms linear backwards; }
+    .leave-fwd, .leave-back { transform: none; transition: opacity 150ms linear; }
+    .fill, .meter > div, .pace__fill { animation: none; }
+    .spill--live::before, .float--alarm svg { animation: none; }
+    .pcard:hover { transform: none; }
+    .choice:hover { transform: none; }
+    @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+  }
+  @media (max-width: 760px) {
+    .top { padding-top: 28px; }
+    .logo { height: 32px; }
+    .nav button { font-size: 16px; }
+    .card { padding: 20px; }
+    .barrow, .tl__axis, .tl__row { grid-template-columns: 110px minmax(0, 1fr); }
+    .barrow b { grid-column: 2; text-align: left; margin-top: -6px; }
+  }
+</style>
+</head>
+<body>
+<header class="top">
+  <nav class="nav" aria-label="Sections" id="nav">
+    <button type="button" data-go="influencers">By Influencer</button>
+    <button type="button" data-go="buy">Buy</button>
+    <button type="button" data-go="sell">Sell</button>
+  </nav>
+  <button type="button" class="logo-btn" aria-label="Home" data-go="home"><img class="logo" alt="carsales" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTA0IiBoZWlnaHQ9IjM4IiB2aWV3Qm94PSIwIDAgMTA0IDM4IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cGF0aCBkPSJNNDQuMzgwMSAyNy4zMjM5QzQ0LjM4MDEgMjYuNTQ4NSA0NS4xMzIxIDI2LjE0ODIgNDYuMDU1NSAyNi4xNDgyQzQ3LjEyNDggMjYuMTQ4MiA0Ny45MzM5IDI2LjY5MzUgNDguMzY4NiAyNy42MTA4TDUxLjU0NzkgMjUuODg5N0M1MC40MjE1IDIzLjkxMDIgNDguMzk3MSAyMi44NDggNDYuMDU1NSAyMi44NDhDNDMuMDc5MiAyMi44NDggNDAuNTYzMSAyNC40ODM5IDQwLjU2MzEgMjcuNDA5QzQwLjU2MzEgMzIuNDU4NiA0OC4wMTk1IDMxLjMxMTMgNDguMDE5NSAzMy40MDQzQzQ4LjAxOTUgMzQuMjM2NCA0Ny4yMTA0IDM0LjYzNjcgNDYuMDIzNyAzNC42MzY3QzQ0LjU4IDM0LjYzNjcgNDMuNTk2NCAzMy45NDk2IDQzLjE5MDMgMzIuNzcwN0wzOS45NTM5IDM0LjU3NjhDNDAuOTk0NiAzNi43ODY0IDQzLjEzMzIgMzcuOTkwNSA0Ni4wMjM3IDM3Ljk5MDVDNDkuMTE3NCAzNy45OTA1IDUxLjgzMzQgMzYuNDk5NiA1MS44MzM0IDMzLjQwMTFDNTEuODMzNCAyOC4xMjE0IDQ0LjM3NyAyOS40NDIxIDQ0LjM3NyAyNy4zMTc2TDQ0LjM4MDEgMjcuMzIzOVoiIGZpbGw9IiNCOUMwQzQiPjwvcGF0aD4KPHBhdGggZD0iTTczLjEwMTcgMTUuMDY1NUg2OS43NjM4VjM3Ljg4MDJINzMuMTAxN1YxNS4wNjU1WiIgZmlsbD0iI0I5QzBDNCI+PC9wYXRoPgo8cGF0aCBkPSJNMjguMDcxMSAyMi45NjQ2SDI0LjczMzJWMjQuMTUyOUMyMy41MTE2IDIzLjMyNzEgMjIuMDM5NCAyMi44NDQ4IDIwLjQ0OTcgMjIuODQ0OEMxNi4yMzkyIDIyLjg0NDggMTIuODI1MSAyNi4yMzY0IDEyLjgyNTEgMzAuNDE5M0MxMi44MjUxIDM0LjYwMjEgMTYuMjM5MiAzNy45OTM3IDIwLjQ0OTcgMzcuOTkzN0MyMi4wMzYyIDM3Ljk5MzcgMjMuNTExNiAzNy41MTE0IDI0LjczMzIgMzYuNjg1NlYzNy44NzM5SDI4LjA3MTFDMjguMDcxMSAzNy44NzM5IDI4LjA3MTEgMjcuOTM0NCAyOC4wNzExIDIyLjk2NDZaTTIwLjQ0OTcgMzQuNjc3N0MxOC4wODU5IDM0LjY3NzcgMTYuMTY2MiAzMi43NzM5IDE2LjE2NjIgMzAuNDIyNEMxNi4xNjYyIDI4LjA3MSAxOC4wODI3IDI2LjE2NzEgMjAuNDQ5NyAyNi4xNjcxQzIyLjgxNjcgMjYuMTY3MSAyNC43MzMyIDI4LjA3MSAyNC43MzMyIDMwLjQyMjRDMjQuNzMzMiAzMi43NzM5IDIyLjgxNjcgMzQuNjc3NyAyMC40NDk3IDM0LjY3NzdaIiBmaWxsPSIjQjlDMEM0Ij48L3BhdGg+CjxwYXRoIGQ9Ik03LjYyNDYyIDM0LjY3NzdDNS4yNjA3NiAzNC42Nzc3IDMuMzQ0MyAzMi43NzM5IDMuMzQ0MyAzMC40MjU2QzMuMzQ0MyAyOC4wNzczIDUuMjYwNzYgMjYuMTcwMyA3LjYyNDYyIDI2LjE3MDNDOS4wNjE5NyAyNi4xNzAzIDEwLjMzMTEgMjYuODczMiAxMS4xMDg1IDI3Ljk1MTJMMTIuOTcxIDI1LjAyNjFDMTEuNTk0IDIzLjY4MDEgOS43MDYwOCAyMi44NTExIDcuNjI0NjIgMjIuODUxMUMzLjQxNDEgMjIuODUxMSAwIDI2LjI0MjggMCAzMC40MjU2QzAgMzQuNjA4NCAzLjQxNDEgMzggNy42MjQ2MiAzOEM5LjcwOTI1IDM4IDExLjU5NCAzNy4xNzEgMTIuOTcxIDM1LjgyNTFMMTEuMTA4NSAzMi44OTk5QzEwLjMzNDMgMzMuOTc3OSA5LjA2MTk3IDM0LjY4MDkgNy42MjQ2MiAzNC42ODA5VjM0LjY3NzdaIiBmaWxsPSIjQjlDMEM0Ij48L3BhdGg+CjxwYXRoIGQ9Ik0zNy40MzE0IDIyLjg1MTFDMzUuODQxNyAyMi44NTExIDM0LjM2OTUgMjMuMzMzNCAzMy4xNDc5IDI0LjE1OTJWMjIuOTYxNEgyOS44MDk5VjM3Ljg3NzFIMzMuMTQ3OVYzMC40Njk3QzMzLjE0NzkgMzAuNDY5NyAzMy4xNTExIDMwLjQzODIgMzMuMTUxMSAzMC40MjU2QzMzLjE1MTEgMjguMDc3MyAzNS4wNjc1IDI2LjE3MDMgMzcuNDMxNCAyNi4xNzAzQzM3Ljk4MDMgMjYuMTcwMyAzOC41MDM4IDI2LjI3NDMgMzguOTg2MSAyNi40NjAyTDQwLjU5NDggMjMuNTMyQzM5LjYzMDIgMjMuMDkzOCAzOC41NjA5IDIyLjg0OCAzNy40MzE0IDIyLjg0OFYyMi44NTExWiIgZmlsbD0iI0I5QzBDNCI+PC9wYXRoPgo8cGF0aCBkPSJNODIuMjU1NyAyMi44NDhDNzguMDQ1MiAyMi44NDggNzQuNjMxMSAyNi4yMzk2IDc0LjYzMTEgMzAuNDIyNEM3NC42MzExIDM0LjYwNTIgNzguMDQ1MiAzNy45OTY5IDgyLjI1NTcgMzcuOTk2OUM4NC40ODk1IDM3Ljk5NjkgODYuNDk4IDM3LjA0MTggODcuODkwOSAzNS41MjI1TDg0Ljc5MDkgMzMuODQyNEM4NC4wODAyIDM0LjM2MjUgODMuMjA0NSAzNC42NzQ2IDgyLjI1MjYgMzQuNjc0NkM4MC40NjYyIDM0LjY3NDYgNzguOTMzNyAzMy41ODcxIDc4LjI5MjcgMzIuMDM5NEg4OS43MDI3Qzg5LjgxNjkgMzEuNTE2MiA4OS44ODAzIDMwLjk3NzIgODkuODgwMyAzMC40MTkzQzg5Ljg4MDMgMjYuMjM2NCA4Ni40NjYyIDIyLjg0NDggODIuMjU1NyAyMi44NDQ4VjIyLjg0OFpNNzguMzI3NiAyOC43MjM0Qzc4Ljk4NzYgMjcuMjE5OSA4MC40OTc5IDI2LjE3MDMgODIuMjUyNiAyNi4xNzAzQzg0LjAwNzIgMjYuMTcwMyA4NS41MTc1IDI3LjIyMzEgODYuMTc3NSAyOC43MjM0SDc4LjMyNzZaIiBmaWxsPSIjQjlDMEM0Ij48L3BhdGg+CjxwYXRoIGQ9Ik0xNC40OTcyIDE4LjEyOTNMMTUuMTY5OSAxNy40NzM3QzE1LjI0MjkgMTcuNDA0MyAyMi40OTk0IDEwLjM5NzMgMzQuMDE0MSA2LjUxNzA2QzQwLjcxMjIgNC4yNjAxNyA0Ny41MzQxIDMuNDg0NzYgNTQuMjkyNSA0LjIwOTc0QzYyLjc1NzkgNS4xMjA2OSA3MS4xNzg5IDguNDExNDUgNzkuMzE3NiAxMy45ODc1TDc5LjgxNTcgMTQuMzI0OEw4MC40MTU0IDE0LjMzNDJDODAuNTI5NyAxNC4zMzQyIDkxLjk5MzUgMTQuNjAyMSAxMDEuNDcxIDIyLjM4MTVMMTA0IDE5LjM0MjlDOTQuNjE3NiAxMS42NDIzIDgzLjgwNzMgMTAuNTY3NSA4MS4wOTQ0IDEwLjQxNjJDNzIuNTE0OCA0LjYzNTI3IDYzLjYwODMgMS4yMjQ3MiA1NC42MTI5IDAuMjc1OTQ2QzQ3LjI1OCAtMC40OTk0NjUgMzkuODQyOCAwLjM2MTA1MiAzMi41Nzk5IDIuODM1NDNDMjIuMjQ1NiA2LjM1MzE1IDE1LjI2NTEgMTIuMDcxIDEzLjA5MTYgMTQuMDA5NUwwLjcyNjYwNyAxMi42NDc4TDAuMjg4NzM5IDE2LjU2NTlMMTMuNTU0OSAxOC4wMjUzTDE0LjQ5NDEgMTguMTI2MkwxNC40OTcyIDE4LjEyOTNaIiBmaWxsPSIjQjlDMEM0Ij48L3BhdGg+CjxwYXRoIGQ9Ik02Ny43NDU4IDIyLjk2NDZINjQuNDA3OFYyNC4xNTI5QzYzLjE4NjMgMjMuMzI3MSA2MS43MTQgMjIuODQ0OCA2MC4xMjQ0IDIyLjg0NDhDNTUuOTEzOCAyMi44NDQ4IDUyLjQ5OTcgMjYuMjM2NCA1Mi40OTk3IDMwLjQxOTNDNTIuNDk5NyAzNC42MDIxIDU1LjkxMzggMzcuOTkzNyA2MC4xMjQ0IDM3Ljk5MzdDNjEuNzEwOCAzNy45OTM3IDYzLjE4NjMgMzcuNTExNCA2NC40MDc4IDM2LjY4NTZWMzcuODczOUg2Ny43NDU4QzY3Ljc0NTggMzIuOTA0MSA2Ny43NDU4IDI3LjkzNDQgNjcuNzQ1OCAyMi45NjQ2Wk02MC4xMjQ0IDM0LjY3NzdDNTcuNzYwNSAzNC42Nzc3IDU1Ljg0MDkgMzIuNzczOSA1NS44NDA5IDMwLjQyMjRDNTUuODQwOSAyOC4wNzEgNTcuNzU3MyAyNi4xNjcxIDYwLjEyNDQgMjYuMTY3MUM2Mi40OTE0IDI2LjE2NzEgNjQuNDA3OCAyOC4wNzEgNjQuNDA3OCAzMC40MjI0QzY0LjQwNzggMzIuNzczOSA2Mi40OTE0IDM0LjY3NzcgNjAuMTI0NCAzNC42Nzc3WiIgZmlsbD0iI0I5QzBDNCI+PC9wYXRoPgo8cGF0aCBkPSJNOTQuMzM1MiAyNy4zMjM5Qzk0LjMzNTIgMjYuNTQ4NSA5NS4wODcyIDI2LjE0ODIgOTYuMDEwNSAyNi4xNDgyQzk3LjA3OTggMjYuMTQ4MiA5Ny44ODg5IDI2LjY5MzUgOTguMzIzNiAyNy42MTA4TDEwMS41MDMgMjUuODg5N0MxMDAuMzc2IDIzLjkxMDIgOTguMzUyMSAyMi44NDggOTYuMDEwNSAyMi44NDhDOTMuMDM0MyAyMi44NDggOTAuNTE4MSAyNC40ODM5IDkwLjUxODEgMjcuNDA5QzkwLjUxODEgMzIuNDU4NiA5Ny45NzQ1IDMxLjMxMTMgOTcuOTc0NSAzMy40MDc0Qzk3Ljk3NDUgMzQuMjM5NiA5Ny4xNjU0IDM0LjYzOTkgOTUuOTc4OCAzNC42Mzk5Qzk0LjUzNTEgMzQuNjM5OSA5My41NTE0IDMzLjk1MjcgOTMuMTQ1MyAzMi43NzM5TDg5LjkwODkgMzQuNThDOTAuOTQ5NiAzNi43ODk2IDkzLjA4ODIgMzcuOTkzNyA5NS45Nzg4IDM3Ljk5MzdDOTkuMDcyNCAzNy45OTM3IDEwMS43ODggMzYuNTAyOCAxMDEuNzg4IDMzLjQwMTFDMTAxLjc4OCAyOC4xMjE0IDk0LjMzMiAyOS40NDIxIDk0LjMzMiAyNy4zMTc2TDk0LjMzNTIgMjcuMzIzOVoiIGZpbGw9IiNCOUMwQzQiPjwvcGF0aD4KPC9zdmc+"></button>
+</header>
+
+<main class="page" id="page"><p class="loading">Loading the latest numbers…</p></main>
+
+<button type="button" class="float float--alerts" id="alertBtn" aria-expanded="false" aria-controls="alerts" aria-label="Notifications" title="Notifications"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 16V11a6 6 0 1 1 12 0v5l1.5 2h-15L6 16Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M10 20.5a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span class="badge" id="alertCount" hidden></span></button>
+<aside class="gloss alerts" id="alerts" aria-label="Notifications"></aside>
+<button type="button" class="float float--refresh" id="refreshBtn" data-refresh aria-label="Refresh the data" title="Refresh the data"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M20 4v7h-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<button type="button" class="float" id="float" aria-expanded="false" aria-controls="gloss" aria-label="What the numbers mean" title="What the numbers mean"><svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="7.2" stroke="currentColor" stroke-width="1.8"/><path d="M7 7a2 2 0 1 1 2.6 1.9c-.4.15-.6.5-.6.9V10.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="9" cy="13" r="1" fill="currentColor"/></svg></button>
+<aside class="gloss" id="gloss" aria-label="What the numbers mean">
+  <h3>What the numbers mean</h3>
+  <dl>
+    <div><dt>Spent</dt><dd>How much money has gone into boosting the influencer's posts so far.</dd></div>
+    <div><dt>Budget</dt><dd>How much we planned to spend.</dd></div>
+    <div><dt>Impressions</dt><dd>How many times the post appeared on someone's screen. One person can see it more than once.</dd></div>
+    <div><dt>Clicks</dt><dd>How many times someone tapped the post to visit carsales.</dd></div>
+    <div><dt>CTR%</dt><dd>Click-through rate: the share of impressions that led to a click. Higher is better.</dd></div>
+    <div><dt>CPC</dt><dd>Cost per click: spent divided by clicks. Lower is better.</dd></div>
+    <div><dt>CPM</dt><dd>Cost per 1,000 impressions. Lower is better.</dd></div>
+    <div><dt>Burst</dt><dd>One run of paid boosting on one platform, with a start and end date. An influencer can have more than one.</dd></div>
+  </dl>
+</aside>
+
+<script>
+  /* No double-slash comments or bare URLs in this script: Apps Script strips them. */
+  (function () {
+    var SAMPLE = {
+      updated: "19 Nov 2026 (sample copy)",
+      dataThrough: "2026-11-18",
+      creatives: [{"platform": "Facebook", "adName": "Chasing Dain - Buy - 23.10 - Boosting - Awareness", "facebook": "https:\/\/business.facebook.com/ads/api/preview_iframe.php?d=AQJbIgrIeDketmjLgvNBavZfqIXqfdy7ctpYOW-jLqStya3fKK4u30fYy4I3BVoVTMygNup7FNrPQuZudHKodtg1iQbpPI6_UqxQq749TRHnhk0AiCm3IZvdzTwRUf5LmM8GZcsXoF32ZPluM9OOSkiw_u73AWCQEJHcmoDMqoJ9PX6ueEQg-ojZElooZZOPEh88qraFVkthBvsYZ3ARA7hZ629mdMt_18LggujKFAm4zQ7pBPgbPhggw7y1qJJyNtAijuwlEuRtSkud05_MwXO977bQjXO1OblzFqWKJ-epHENZeKsKiJOeWCFnKaYK2DJXPez0CkBAOXNLEatpV88AQPoVJ4ahP0TvvbAVgkepLXZB06WbitLm7FtRTNSRk2hR7suIl5w99LZ6lmGhId5RuOyNzE4YghoOxuIM9ftYO35xbQnb6yO7jfi5vb0HbDY&t=AQJI8FxWGteamba6JtA", "instagram": "https:\/\/business.facebook.com/ads/api/preview_iframe.php?d=AQKYOsjmCOpX0d0VsPTBujyWDrtv4EWxdM3BNwNf933RnbGoThc1NyFe-I61ZSBMR5FSBk8hlFAhs4Msde72Xusl5cMFIj8rlSkO69_2VnkU83P1EXyAFA5ifPa3ZDK0RQs2Ux_NDtsSxX3XyrJsoNrXTiSCXSIiNqBvha89-rCnFTdHH96xr4yuvkyEmPaFYbxSoqYUzbT7EUsv0XsKsQISwdx9KXsZ6wnTLfnV3QEBSBIQKMAedfVThOJIdN88-9MaxleaiXmECYG8i91K539VWSMfAc2v664vXnVVjc_9A3V55UAIMgmsW5wkhQ3mf0TF7e9lmKNydYC1irDdclOiDxqmE8ADj-DeqVVK2xQYWLVrhVcsZ3y7HGiGt1U3v257zUyy_CQDrMIaMrMwuIYJUMNwDps6CSCdTnfCsEhmyQxDnIQ3LcdRoymA8Hx02IE&t=AQJM4F0lCFVvLAZXNNs", "cost": 2717.25}, {"platform": "TikTok", "adName": "If you see me talking to my phone\u2026 you know exactly what I\u2019m doing @carsales #ad _Claudia Macdonald - Buy - 09.10 - Boosting - Awareness", "tiktok": "https:\/\/m.tiktok.com/v/7688930269574728968.html", "cost": 14163.85}, {"platform": "TikTok", "adName": "Buying a car when you\u2019re not exactly an expert is made so easy, thanks to @carsales !! I've bought my last two cars through carsales and now with our third baby arriving I'm looking at my options for our next family car, maybe an EV!! #ad #carsales #electriccar #familycar #mumcar_Matilda Valles - Buy - 01.10 - Boosting - Awareness", "tiktok": "https:\/\/m.tiktok.com/v/7691449398261321012.html", "cost": 4061.34}, {"platform": "TikTok", "adName": "Thinking it might be time for a new car Searching has been made so much easier with the voice search feature on the carsales app \u2014 just say what you're looking for and start scrolling through options @carsales #ad_Riley Rodgers-Falk - Buy - 20.10 - Boosting - Awareness", "tiktok": "https:\/\/m.tiktok.com/v/7698163624220609810.html", "cost": 1666.3}, {"platform": "TikTok", "adName": "If you see me talking to my phone\u2026 you know exactly what I\u2019m doing @carsales #ad _Claudia Macdonald - Buy - 24.09 - Boosting - Awareness", "tiktok": "https:\/\/m.tiktok.com/v/7688930269574728968.html", "cost": 1665.27}, {"platform": "TikTok", "adName": "Your first heartbreak was a guy? Mine was a car.  @carsales  #carsales #Ad #bubblecar #firstcar #upgrade _Sheridan Omalley - Private Sell - 24.09 - Boosting - Awareness", "tiktok": "https:\/\/m.tiktok.com/v/7688931240841448725.html", "cost": 832.11}],
+      rows: [
+        ["Buy", "Chasing Dain", "2026-10-23", "2026-11-19", "Facebook", 2717.25, 3333.33, 980093, 332, "2026-11-14"],
+        ["Buy", "Claudia Macdonald", "2026-09-24", "2026-10-07", "TikTok", 1665.27, 1666.67, 1432395, 5689, "2026-10-07"],
+        ["Buy", "Claudia Macdonald", "2026-10-09", "2026-10-21", "TikTok", 14163.85, 14164.73, 5621252, 17045, "2026-10-21"],
+        ["Buy", "Harry Mckay", "2026-10-29", "2026-11-11", "Facebook", 1666.63, 1666.67, 679997, 128, "2026-11-11"],
+        ["Buy", "Matilda Valles", "2026-10-01", "2026-10-14", "Facebook", 4062.55, 4063, 1538925, 492, "2026-10-14"],
+        ["Buy", "Matilda Valles", "2026-10-01", "2026-10-14", "TikTok", 4061.34, 4063, 1732498, 3324, "2026-10-14"],
+        ["Buy", "Riley RodgersFalk", "2026-10-20", "2026-11-02", "TikTok", 1666.3, 1667, 1143155, 3405, "2026-11-02"],
+        ["Sell", "Carly Mcdonagh", "2026-10-23", "2026-11-05", "Facebook", 1666.58, 1666.67, 596226, 128, "2026-11-05"],
+        ["Sell", "Kale Roberts", "2026-09-11", "2026-10-24", "Facebook", 3003.41, 0, 1152351, 464, "2026-10-09"],
+        ["Sell", "Sheridan OMalley", "2026-09-24", "2026-10-07", "Facebook", 833.26, 833.33, 313077, 82, "2026-10-07"],
+        ["Sell", "Sheridan OMalley", "2026-09-24", "2026-10-07", "TikTok", 832.11, 833.33, 627007, 1027, "2026-10-07"]
+      ].map(function (r) {
+        return { area: r[0], name: r[1], start: r[2], end: r[3], platform: r[4], spend: r[5], budget: r[6], impr: r[7], clicks: r[8], lastSpend: r[9] };
+      })
+    };
+
+    var $ = function (id) { return document.getElementById(id); };
+    var DATA = null;
+    var state = { view: "home", sort: "impr", area: "all", open: {}, person: "", prev: "influencers" };
+    var ORDER = { home: 0, influencers: 1, buy: 2, sell: 3, person: 4 };
+    var firstHome = true;
+
+    /* ---------- Formatting ---------- */
+    function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+    function int(n) { return Math.round(n).toLocaleString("en-AU"); }
+    function money(n) { return "$" + Math.round(n).toLocaleString("en-AU"); }
+    function money2(n) { return "$" + n.toFixed(2); }
+    function pct(n) { return (n * 100).toFixed(2) + "%"; }
+    function words(n) {
+      if (n >= 1e6) return (n / 1e6).toFixed(1).replace(/\.0$/, "") + " million";
+      return int(n);
+    }
+    function oneIn(t) { return t.clicks ? "1 in " + int(t.impr / t.clicks) : "no clicks"; }
+    var MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    function d(iso) { if (!iso) return ""; var p = iso.split("-"); return Number(p[2]) + " " + MON[Number(p[1]) - 1]; }
+    function range(t) { return t.start ? d(t.start) + " to " + d(t.end) : "No dates"; }
+    function todayIso() { var n = new Date(); return n.getFullYear() + "-" + String(n.getMonth() + 1).padStart(2, "0") + "-" + String(n.getDate()).padStart(2, "0"); }
+    function toTime(iso) { var p = iso.split("-"); return new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2])).getTime(); }
+
+    /* ---------- Maths ---------- */
+    function sum(rows) {
+      var t = { spend: 0, budget: 0, budgetedSpend: 0, unbudgeted: 0, impr: 0, clicks: 0, start: "", end: "", lastSpend: "", rows: rows };
+      rows.forEach(function (x) {
+        t.spend += x.spend; t.budget += x.budget; t.impr += x.impr; t.clicks += x.clicks;
+        if (x.budget > 0) t.budgetedSpend += x.spend; else t.unbudgeted += x.spend;
+        if (x.lastSpend && x.lastSpend > t.lastSpend) t.lastSpend = x.lastSpend;
+        if (x.start && (!t.start || x.start < t.start)) t.start = x.start;
+        if (x.end && (!t.end || x.end > t.end)) t.end = x.end;
+      });
+      t.ctr = t.impr ? t.clicks / t.impr : 0;
+      t.cpc = t.clicks ? t.spend / t.clicks : 0;
+      t.cpm = t.impr ? t.spend / t.impr * 1000 : 0;
+      return t;
+    }
+    function group(rows, key) {
+      var map = {}, out = [];
+      rows.forEach(function (r) { var k = r[key]; if (!map[k]) { map[k] = []; out.push(k); } map[k].push(r); });
+      return out.map(function (k) { var t = sum(map[k]); t.key = k; return t; });
+    }
+    function people(rows) {
+      return group(rows, "name").map(function (t) {
+        t.area = t.rows[0].area;
+        t.platforms = t.rows.map(function (r) { return r.platform; }).filter(function (p, i, a) { return a.indexOf(p) === i; });
+        return t;
+      });
+    }
+    /* A burst that should be running but has not spent anything for more than a day. */
+    function daysBetween(a, b) { return Math.round((toTime(b) - toTime(a)) / 864e5); }
+    function flagged(r) {
+      var today = todayIso();
+      if (!r.start || !r.end || r.end < today || r.start >= today) return false;
+      return daysBetween(r.lastSpend || r.start, today) > 1;
+    }
+    function flagText(r) {
+      return (r.lastSpend ? "No spend since " + d(r.lastSpend) : "No spend since it started on " + d(r.start)) + ", but booked to run until " + d(r.end) + ".";
+    }
+    function status(t) {
+      var today = todayIso();
+      var bad = t.rows.filter(flagged);
+      if (bad.length) return { cls: "warn", label: "Possible errors", tip: bad.map(function (r) { return r.platform + ": " + flagText(r); }).join(" ") };
+      if (!t.start) return { cls: "finished", label: "No dates" };
+      if (t.start > today) return { cls: "upcoming", label: "Starts " + d(t.start) };
+      if (t.end >= today) return { cls: "live", label: "Live" };
+      return { cls: "finished", label: "Finished" };
+    }
+    function areas() {
+      var order = ["Buy", "Sell"];
+      DATA.rows.forEach(function (r) { if (r.area && order.indexOf(r.area) < 0) order.push(r.area); });
+      return order.filter(function (a) { return DATA.rows.some(function (r) { return r.area === a; }); });
+    }
+    function rowsFor(area) { return DATA.rows.filter(function (r) { return area === "all" || r.area.toLowerCase() === area; }); }
+
+    var METRICS = {
+      impr: { label: "Impressions", val: function (t) { return t.impr; }, fmt: words, high: true },
+      clicks: { label: "Clicks", val: function (t) { return t.clicks; }, fmt: int, high: true },
+      ctr: { label: "CTR%", val: function (t) { return t.ctr; }, fmt: function (v) { return pct(v); }, high: true },
+      cpc: { label: "CPC", val: function (t) { return t.cpc; }, fmt: money2, high: false },
+      spend: { label: "Spent", val: function (t) { return t.spend; }, fmt: money, high: true }
+    };
+
+    /* ---------- Icons ---------- */
+    var ICON = {
+      person: '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/><path d="M4 20c1.5-3.5 4.5-5 8-5s6.5 1.5 8 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+      buy: '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="2"/><path d="M18.1 10.4A6 6 0 1 1 10.3 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M7 6h1v4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M16.7 13.9l.7.7-2.8 2.8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+      sell: '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 12.5V4h8.5L21 13.5 13.5 21 3 12.5Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="8" cy="8.5" r="1.6" fill="currentColor"/></svg>',
+      refresh: '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M20 4v7h-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+      arrow: '<svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+      chev: '<svg viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M5 3l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+    };
+
+    function through() { return (DATA.dataThrough ? "Data up to " + d(DATA.dataThrough) + ". " : "") + "Updated " + esc(DATA.updated) + "."; }
+
+    /* ---------- Views ---------- */
+    /* "Good Morning, Edmond": time of day on the viewer's own clock, first name from the CONTACTS list in Code.gs. */
+    function greeting() {
+      var h = new Date().getHours();
+      var g = h < 12 ? "Good Morning" : h < 17 ? "Good Afternoon" : "Good Evening";
+      return g + (DATA && DATA.viewer ? ", " + esc(DATA.viewer) : "");
+    }
+    function home() {
+      var all = sum(DATA.rows), buy = rowsFor("buy"), sell = rowsFor("sell");
+      var nAll = people(DATA.rows).length, nBuy = people(buy).length, nSell = people(sell).length;
+      var tile = function (go, icon, title, desc, meta) {
+        return '<button type="button" class="choice" data-go="' + go + '"><span class="choice__icon">' + ICON[icon] + '</span>' +
+          '<span class="choice__title">' + title + '</span></button>';
+      };
+      return '<h1 class="hero">' + greeting() + '</h1>' +
+        '<div class="choices">' +
+        tile("influencers", "person", "Influencer", "Every influencer side by side. See who was seen most, clicked most and gave the best value.", nAll + " influencers") +
+        tile("buy", "buy", "Buy Performance", "Influencers talking about buying a car on carsales, by platform and burst.", nBuy + " influencers · " + money(sum(buy).spend) + " spent") +
+        tile("sell", "sell", "Sell Performance", "Influencers talking about selling a car on carsales, by platform and burst.", nSell + " influencers · " + money(sum(sell).spend) + " spent") +
+        '</div>' + (DATA.dataThrough ? '<div class="home-foot"><span>Data up to ' + d(DATA.dataThrough) + '.</span></div>' : '');
+    }
+
+    function warnings(rows) {
+      var bad = rows.filter(flagged);
+      if (!bad.length) return "";
+      var items = bad.map(function (r) { return '<li><b>' + esc(r.name) + '</b> on ' + esc(r.platform) + '. ' + flagText(r) + '</li>'; }).join("");
+      return '<section class="warning" role="note"><span class="warning__title">Possible errors</span>' +
+        '<ul>' + items + '</ul></section>';
+    }
+
+    /*
+      Pacing for bursts that are running today. Expected spend assumes the budget is spread
+      evenly across the scheduled days. Spend data runs to DATA.dataThrough (usually yesterday).
+    */
+    function pacing(rows, quietIfNone) {
+      var today = todayIso();
+      var through = DATA.dataThrough || today;
+      var live = rows.filter(function (r) { return r.start && r.end && r.start <= today && r.end >= today; });
+      var head = '<h2>Pacing</h2>';
+      if (!live.length && quietIfNone) return "";
+      if (!live.length) return '<section class="card">' + head + '<p class="note">No influencers are running right now.</p></section>';
+      var items = live.map(function (r) {
+        var total = daysBetween(r.start, r.end) + 1;
+        var done = Math.max(0, Math.min(total, daysBetween(r.start, through) + 1));
+        var who = '<span class="pace__name">' + esc(r.name) + '</span>' + platChips([r.platform]);
+        var top = function (pill) { return '<div class="pace__top"><div class="pace__who">' + who + '</div>' + pill + '</div>'; };
+        if (!r.budget) return '<div class="pace">' + top('<span class="pace__pill">No budget set</span>') + '</div>';
+        if (!done) return '<div class="pace">' + top('<span class="pace__pill">Just started</span>') + '</div>';
+        var expected = r.budget * done / total;
+        var ratio = r.spend / expected;
+        var cls = ratio < 0.9 ? "behind" : ratio > 1.1 ? "ahead" : "ontrack";
+        var label = { behind: "Behind", ahead: "Ahead", ontrack: "On track" }[cls];
+        var spentPct = Math.min(r.spend / r.budget * 100, 100);
+        var expPct = Math.min(expected / r.budget * 100, 100);
+        return '<div class="pace">' + top('<span class="pace__pill pace__pill--' + cls + '">' + label + '</span>') +
+          '<div class="pace__track" role="img" aria-label="' + money(r.spend) + ' spent, should be ' + money(expected) + ' by now, of ' + money(r.budget) + ' budget">' +
+          '<div class="pace__exp" style="width:' + expPct.toFixed(1) + '%"></div><div class="pace__fill" style="width:' + spentPct.toFixed(1) + '%"></div></div>' +
+          '<dl class="pace__nums"><div><dt>Spent</dt><dd>' + money(r.spend) + '</dd></div><div><dt>Should be at by now</dt><dd>' + money(expected) + '</dd></div><div><dt>Budget</dt><dd>' + money(r.budget) + '</dd></div><div><dt>Day</dt><dd>' + done + ' of ' + total + '</dd></div><div><dt>Pace</dt><dd>' + Math.round(ratio * 100) + '%</dd></div></dl></div>';
+      }).join("");
+      return '<section class="card">' + head + '<div class="paces">' + items + '</div></section>';
+    }
+
+    function platColour(p) { return /tiktok/i.test(p) ? "var(--ink)" : "var(--sky)"; }
+    function platChips(list) {
+      return list.map(function (p) { return '<span class="pchip"><i style="background:' + platColour(p) + '"></i>' + esc(p) + '</span>'; }).join("");
+    }
+    function statusPill(t) {
+      var st = status(t);
+      var label = st.cls === "finished" && t.end ? "Ended " + d(t.end) : st.label;
+      return '<span class="spill spill--' + st.cls + '"' + (st.tip ? ' title="' + esc(st.tip) + '"' : '') + '>' + label + '</span>';
+    }
+    /* Live (and flagged or upcoming) first, then the most recently ended. */
+    function byRecency(list) {
+      var rank = { warn: 0, live: 0, upcoming: 1, finished: 2 };
+      return list.slice().sort(function (a, b) {
+        var ra = rank[status(a).cls], rb = rank[status(b).cls];
+        if (ra !== rb) return ra - rb;
+        if (ra === 2) return a.end < b.end ? 1 : a.end > b.end ? -1 : 0;
+        return a.end < b.end ? -1 : a.end > b.end ? 1 : 0;
+      });
+    }
+    function roster(list, showArea) {
+      var rows = byRecency(list).map(function (t) {
+        return '<button type="button" class="prow" data-person="' + esc(t.key) + '">' +
+          '<span class="prow__name">' + esc(t.key) + '</span>' +
+          '<span class="prow__status">' + statusPill(t) + '</span>' +
+          '<span class="prow__chips">' + platChips(t.platforms) + (showArea ? '<span class="tag tag--' + esc(t.area.toLowerCase()) + '">' + esc(t.area) + '</span>' : '') + '</span>' +
+          '<span class="prow__dates"><span><em>Start</em>' + d(t.start) + '</span><span><em>End</em>' + d(t.end) + '</span></span>' +
+          '<span class="prow__go" aria-hidden="true">' + ICON.arrow + '</span></button>';
+      }).join("");
+      return '<section class="card"><h2>Influencers</h2><div class="prows">' + rows + '</div></section>';
+    }
+
+    function bursts(rows) {
+      var list = rows.slice().sort(function (a, b) { return a.start < b.start ? 1 : a.start > b.start ? -1 : 0; });
+      var body = list.map(function (r) {
+        var t = sum([r]);
+        var over = r.budget > 0 && r.spend > r.budget * 1.02;
+        return '<tr><td><span class="pchip pchip--sm"><i style="background:' + platColour(r.platform) + '"></i>' + esc(r.platform) + '</span></td><td>' + range(r) + '</td><td>' + statusPill(t) + '</td>' +
+          '<td class="num' + (over ? ' over' : '') + '">' + money(r.spend) + '</td><td class="num">' + (r.budget ? money(r.budget) : "None set") + '</td>' +
+          '<td class="num">' + int(r.impr) + '</td><td class="num">' + int(r.clicks) + '</td><td class="num">' + pct(t.ctr) + '</td><td class="num">' + (r.clicks ? money2(t.cpc) : "n/a") + '</td>' +
+          '<td>' + (r.lastSpend ? d(r.lastSpend) : "None") + '</td></tr>';
+      }).join("");
+      return '<section class="card card--bare"><div><h2>Each burst</h2><p class="card__desc">Newest first. A burst is one run of paid boosting on one platform.</p></div>' +
+        '<div class="well"><table><thead><tr><th>Platform</th><th>Dates</th><th>Status</th><th class="num">Spent</th><th class="num">Budget</th><th class="num">Impressions</th><th class="num">Clicks</th><th class="num">CTR%</th><th class="num">CPC</th><th>Last spend</th></tr></thead><tbody>' + body + '</tbody></table></div></section>';
+    }
+
+    /* Influencer page: a "Pacing" pill beside the status that pops out the pacing card on hover or keyboard focus. */
+    function pacePop(rows) {
+      var card = pacing(rows, true);
+      if (!card) return "";
+      var today = todayIso(), through = DATA.dataThrough || today;
+      var worst = "", order = { behind: 0, ahead: 1, ontrack: 2 };
+      rows.forEach(function (r) {
+        if (!r.start || !r.end || r.start > today || r.end < today || !r.budget) return;
+        var total = daysBetween(r.start, r.end) + 1;
+        var done = Math.max(0, Math.min(total, daysBetween(r.start, through) + 1));
+        if (!done) return;
+        var ratio = r.spend / (r.budget * done / total);
+        var cls = ratio < 0.9 ? "behind" : ratio > 1.1 ? "ahead" : "ontrack";
+        if (!worst || order[cls] < order[worst]) worst = cls;
+      });
+      var label = worst ? { behind: "Behind", ahead: "Ahead", ontrack: "On track" }[worst] : "Live";
+      return '<span class="popwrap" tabindex="0" aria-label="Pacing: ' + label + '"><span class="pace__pill pace__pill--' + (worst || "ontrack") + ' popwrap__pill">Pacing: ' + label + '</span>' +
+        '<span class="popout" role="tooltip">' + card + '</span></span>';
+    }
+
+    function personPage(name) {
+      var rows = DATA.rows.filter(function (r) { return r.name === name; });
+      if (!rows.length) return '<h1 class="hero">Influencer not found</h1>';
+      var t = people(rows)[0];
+      var backLabel = { influencers: "All influencers", buy: "Buy performance", sell: "Sell performance", home: "Home" }[state.prev] || "Back";
+      return '<button type="button" class="back" data-back><svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M14 9H4M8 5L4 9l4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' + backLabel + '</button>' +
+        '<div class="ptop"><div class="ptop__left">' +
+        '<div class="who"><h1 class="hero">' + esc(name) + '</h1><div class="who__chips">' + platChips(t.platforms) + statusPill(t) + pacePop(rows) + '</div></div>' +
+        kpis(t).replace('class="kpis"', 'class="kpis kpis--side"') +
+        '</div><div class="ptop__right">' + creativeSection(name) + '</div></div>' +
+        (t.platforms.length > 1 ? platforms(rows) : "") + bursts(rows) +
+        '<p class="foot">' + through() + '</p>';
+    }
+
+    /* ---------- Creatives ---------- */
+    function normName(x) { return String(x || "").toLowerCase().replace(/[^a-z]/g, ""); }
+    /* Search the whole ad name cell for an influencer's name. If two names match, the longest wins. */
+    function ownerOf(adName) {
+      var cell = normName(adName);
+      var hits = people(DATA.rows).map(function (t) { return t.key; }).filter(function (n) { return normName(n) && cell.indexOf(normName(n)) >= 0; });
+      hits.sort(function (a, b) { return normName(b).length - normName(a).length; });
+      return hits[0] || "";
+    }
+    function burstDate(adName) {
+      var tail = String(adName).split("_").pop();
+      var m = tail.match(/(\d{1,2})\.(\d{1,2})/);
+      return m ? Number(m[1]) + " " + MON[Number(m[2]) - 1] : "";
+    }
+    function caption(adName) {
+      var s = String(adName);
+      var i = s.lastIndexOf("_");
+      return i > 0 ? s.slice(0, i).trim() : "";
+    }
+    function tiktokId(url) { var m = String(url).match(/(?:\/v\/|\/video\/)(\d+)/); return m ? m[1] : ""; }
+    function creativesFor(name) {
+      var out = [], byKey = {};
+      (DATA.creatives || []).forEach(function (c) {
+        if (ownerOf(c.adName) !== name) return;
+        var key = c.platform + "|" + (c.tiktok || c.facebook || c.instagram);
+        var date = burstDate(c.adName);
+        if (byKey[key]) { if (date && byKey[key].dates.indexOf(date) < 0) byKey[key].dates.push(date); byKey[key].cost += c.cost || 0; return; }
+        byKey[key] = { platform: c.platform, c: c, dates: date ? [date] : [], cost: c.cost || 0, caption: caption(c.adName) };
+        out.push(byKey[key]);
+      });
+      return out;
+    }
+    /* Previews only embed inside the Apps Script web app. Elsewhere (local file, claude.ai) they become links. */
+    var CAN_EMBED = !!(window.google && google.script && google.script.run);
+    var LIVE_URL = "https:\/\/script.google.com/a/macros/carsales.com.au/s/AKfycbzkl1OgU1ki5-_Oix-1FPfjXUaqw6d3A4h0uGx78z0k3Bogy_GN3yqkdisHTNEXL6L3/exec";
+    function linkTile(href, label, cls) {
+      return '<a class="clink ' + cls + '" href="' + esc(href) + '" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8"/><path d="M10 8.5v7l6-3.5-6-3.5Z" fill="currentColor"/></svg><span>' + label + '</span></a>';
+    }
+    function frame(src, title, cls) {
+      if (!CAN_EMBED) return linkTile(src || LIVE_URL, src ? "Open the preview" : "See the preview in the live dashboard", cls);
+      return '<iframe class="cframe ' + cls + '" src="' + esc(src) + '" title="' + esc(title) + '" loading="lazy" allow="autoplay; encrypted-media; fullscreen" referrerpolicy="no-referrer-when-downgrade"></iframe>';
+    }
+    function ctile(platform, label, embed, open, meta) {
+      return '<div class="ctile"><div class="ctile__head"><span class="pchip pchip--sm"><i style="background:' + platColour(platform) + '"></i>' + esc(label) + '</span>' +
+        (open ? '<a class="ctile__open" href="' + esc(open) + '" target="_blank" rel="noopener">Open' + ICON.arrow + '</a>' : '') + '</div>' +
+        embed + (meta ? '<p class="ctile__meta">' + meta + '</p>' : '') + '</div>';
+    }
+    function creativeSection(name) {
+      var list = creativesFor(name);
+      if (!list.length) return '<p class="note">No creative preview for ' + esc(name) + ' in the Creative Previews tab yet.</p>';
+      var items = [];
+      list.forEach(function (x) {
+        var when = x.dates.length ? (x.dates.length > 1 ? "Bursts from " : "Burst from ") + x.dates.join(" and ") : "";
+        var meta = "";
+        if (x.platform === "TikTok") {
+          var id = tiktokId(x.c.tiktok);
+          var embed = !CAN_EMBED ? linkTile(x.c.tiktok, "Watch on TikTok", "cframe--tiktok") : id ? frame("https:\/\/www.tiktok.com/embed/v2/" + id, name + " on TikTok", "cframe--tiktok") : '<p class="note">Preview not available.</p>';
+          items.push({ label: "TikTok", html: ctile("TikTok", "TikTok", embed, x.c.tiktok, (x.caption ? '\u201c' + esc(x.caption) + '\u201d' : '')) });
+          return;
+        }
+        if (!CAN_EMBED && !x.c.facebook && !x.c.instagram) { items.push({ label: "Meta", html: ctile("Meta", "Meta", frame("", name, "cframe--meta"), "", meta) }); return; }
+        if (x.c.facebook) items.push({ label: "Meta \u00b7 Facebook", html: ctile("Meta", "Meta \u00b7 Facebook", frame(x.c.facebook, name + " Facebook feed preview", "cframe--meta"), x.c.facebook, meta) });
+        if (x.c.instagram) items.push({ label: "Meta \u00b7 Instagram", html: ctile("Meta", "Meta \u00b7 Instagram", frame(x.c.instagram, name + " Instagram preview", "cframe--meta"), x.c.instagram, meta) });
+      });
+      if (items.length === 1) return '<div class="creatives">' + items[0].html + '</div>';
+      /* More than one creative: a toggle shows one at a time. */
+      var tabs = items.map(function (it, i) {
+        return '<button type="button" class="chip" data-ctab="' + i + '" aria-pressed="' + (i === 0) + '">' + it.label + '</button>';
+      }).join("");
+      var panes = items.map(function (it, i) { return '<div class="cpane" data-cpane="' + i + '"' + (i ? ' hidden' : '') + '>' + it.html + '</div>'; }).join("");
+      return '<div class="cswitch"><div class="chips cswitch__tabs" role="group" aria-label="Choose a creative">' + tabs + '</div><div class="creatives creatives--one">' + panes + '</div></div>';
+    }
+
+    function kpis(t) {
+      var hasBudget = t.budget > 0;
+      var share = hasBudget ? Math.min(t.budgetedSpend / t.budget, 1) : 0;
+      var extra = hasBudget && t.unbudgeted > 0 ? '<span class="kpi__note" style="color:var(--ink-faint)">Includes ' + money(t.unbudgeted) + ' with no budget set</span>' : '';
+      return '<section class="kpis" aria-label="Key numbers">' +
+        '<div class="kpi"><span class="kpi__label">Spent</span><span class="kpi__value">' + money(t.spend) + '</span>' +
+        (hasBudget ? '<span class="kpi__note">' + (t.unbudgeted > 0 ? money(t.budgetedSpend) + ' ' : '') + 'of ' + money(t.budget) + ' budget (' + Math.round(t.budgetedSpend / t.budget * 100) + '%)</span><div class="meter"><div style="width:' + (share * 100).toFixed(1) + '%"></div></div>' + extra : '<span class="kpi__note">No budget set</span>') + '</div>' +
+        '<div class="kpi"><span class="kpi__label">Impressions</span><span class="kpi__value">' + words(t.impr) + '</span><span class="kpi__note">' + money2(t.cpm) + ' CPM</span></div>' +
+        '<div class="kpi"><span class="kpi__label">Clicks</span><span class="kpi__value">' + int(t.clicks) + '</span></div>' +
+        '<div class="kpi"><span class="kpi__label">CTR%</span><span class="kpi__value">' + pct(t.ctr) + '</span></div>' +
+        '</section>';
+    }
+
+    function highlights(list) {
+      if (!list.length) return "";
+      var best = function (key, high) {
+        var c = list.filter(function (t) { return key !== "cpc" || t.clicks > 0; });
+        return c.slice().sort(function (a, b) { return high ? b[key] - a[key] : a[key] - b[key]; })[0];
+      };
+      var seen = best("impr", true), clicks = best("clicks", true), value = best("cpc", false), rate = best("ctr", true);
+      var item = function (label, t, text) {
+        return '<li><span class="hl__label">' + label + '</span><span class="hl__name">' + esc(t.key) + '</span><span class="hl__text">' + text + '</span></li>';
+      };
+      return '<section class="card"><div><h2>The short version</h2><p class="card__desc">Who stood out, in plain terms.</p></div><ul class="highlights">' +
+        item("Seen the most", seen, "Seen " + words(seen.impr) + " times.") +
+        item("Most clicks", clicks, int(clicks.clicks) + " people clicked through to carsales.") +
+        item("Best click rate", rate, oneIn(rate) + " people who saw it clicked.") +
+        item("Best value", value, "Each click cost " + money2(value.cpc) + ".") +
+        '</ul></section>';
+    }
+
+    function ranking(list, showArea) {
+      var m = METRICS[state.sort];
+      var sorted = list.slice().sort(function (a, b) { return m.high ? m.val(b) - m.val(a) : m.val(a) - m.val(b); });
+      var max = Math.max.apply(null, sorted.map(m.val)) || 1;
+      var chips = Object.keys(METRICS).map(function (k) {
+        return '<button type="button" class="chip" data-sort="' + k + '" aria-pressed="' + (state.sort === k) + '">' + METRICS[k].label + '</button>';
+      }).join("");
+      var areaChips = showArea ? '<div><span class="controls__label">Show</span><div class="chips">' + ["all"].concat(areas()).map(function (a) {
+        return '<button type="button" class="chip" data-area="' + a.toLowerCase() + '" aria-pressed="' + (state.area === a.toLowerCase()) + '">' + (a === "all" ? "Everyone" : esc(a)) + '</button>';
+      }).join("") + '</div></div>' : "";
+      var bars = sorted.map(function (t, i) {
+        var w = Math.max(m.val(t) / max * 100, 1.5);
+        var cls = showArea ? " fill--" + t.area.toLowerCase() : "";
+        return '<div class="barrow"><button type="button" class="barrow__name" data-person="' + esc(t.key) + '" title="Open ' + esc(t.key) + '">' + esc(t.key) + '</button><div class="track"><div class="fill' + cls + '" style="width:' + w.toFixed(1) + '%;animation-delay:' + (i * 40) + 'ms"></div></div><b>' + m.fmt(m.val(t), t) + '</b></div>';
+      }).join("");
+      var legend = showArea ? '<div class="legend">' + areas().map(function (a) { return '<span><i class="fill--' + a.toLowerCase() + '"></i>' + esc(a) + '</span>'; }).join("") + '</div>' : "";
+      return '<section class="card"><div class="card__head"><div><h2>Compare influencers</h2></div>' + legend + '</div>' +
+        '<div class="controls"><div><span class="controls__label">Compare by</span><div class="chips">' + chips + '</div></div>' + areaChips + '</div>' +
+        '<div class="bars swap" id="bars">' + bars + '</div></section>';
+    }
+
+    function platforms(rows) {
+      var list = group(rows, "platform");
+      if (!list.length) return "";
+      var colour = function (p) { return /tiktok/i.test(p) ? "var(--ink)" : "var(--sky)"; };
+      var cols = list.map(function (t) {
+        return '<div class="plat__col"><span class="plat__name"><i style="background:' + colour(t.key) + '"></i>' + esc(t.key) + '</span><dl>' +
+          '<dt>Spent</dt><dd>' + money(t.spend) + '</dd>' +
+          '<dt>Impressions</dt><dd>' + words(t.impr) + '</dd>' +
+          '<dt>Clicks</dt><dd>' + int(t.clicks) + '</dd>' +
+          '<dt>CTR%</dt><dd>' + pct(t.ctr) + '</dd>' +
+          '<dt>CPC</dt><dd>' + (t.clicks ? money2(t.cpc) : "n/a") + '</dd>' +
+          '<dt>CPM</dt><dd>' + money2(t.cpm) + '</dd></dl></div>';
+      }).join("");
+      var verdict = "";
+      if (list.length >= 2) {
+        var s = list.slice().sort(function (a, b) { return a.cpc - b.cpc; });
+        var a = s[0], b = s[s.length - 1];
+        if (a.clicks && b.clicks) {
+          var x = b.cpc / a.cpc;
+          verdict = '<p class="verdict">' + esc(a.key) + ' got people clicking for less: each click cost ' + money2(a.cpc) + ', against ' + money2(b.cpc) + ' on ' + esc(b.key) +
+            (x >= 1.5 ? ' (about ' + Math.round(x) + ' times cheaper).' : '.') + '</p>';
+        }
+      }
+      return '<section class="card"><div><h2>Meta or TikTok?</h2><p class="card__desc">The same numbers, split by where the posts ran.</p></div>' + verdict + '<div class="plat">' + cols + '</div></section>';
+    }
+
+    function timeline(rows) {
+      var dated = rows.filter(function (r) { return r.start && r.end; });
+      if (!dated.length) return "";
+      var today = todayIso();
+      var min = dated.reduce(function (m, r) { return r.start < m ? r.start : m; }, dated[0].start);
+      var max = dated.reduce(function (m, r) { return r.end > m ? r.end : m; }, dated[0].end);
+      if (today > max) max = today;
+      var t0 = toTime(min), t1 = toTime(max) + 864e5, span = t1 - t0;
+      var pos = function (iso) { return (toTime(iso) - t0) / span * 100; };
+      var months = "", m = new Date(t0); m.setDate(1); m.setMonth(m.getMonth() + 1);
+      while (m.getTime() < t1) {
+        months += '<span style="left:' + ((m.getTime() - t0) / span * 100).toFixed(2) + '%">' + MON[m.getMonth()] + '</span>';
+        m.setMonth(m.getMonth() + 1);
+      }
+      var lanes = people(dated).map(function (t) {
+        var bars = t.rows.map(function (r) {
+          var l = pos(r.start), w = Math.max(pos(r.end) + 100 * 864e5 / span - l, 0.8);
+          var c = /tiktok/i.test(r.platform) ? "var(--ink)" : "var(--sky)";
+          return '<div class="tl__bar"><i style="left:' + l.toFixed(2) + '%;width:' + w.toFixed(2) + '%;background:' + c + '" title="' + esc(r.platform + ": " + d(r.start) + " to " + d(r.end)) + '"></i></div>';
+        }).join("");
+        var todayLine = '<div class="tl__today" style="left:' + pos(today).toFixed(2) + '%" title="Today"></div>';
+        return '<div class="tl__row"><span class="tl__name">' + esc(t.key) + '</span><div class="tl__lane">' + bars + todayLine + '</div></div>';
+      }).join("");
+      return '<section class="card"><div class="card__head"><div><h2>When each influencer ran</h2><p class="card__desc">Each bar is one burst of paid boosting. The amber line is today.</p></div>' +
+        '<div class="legend"><span><i style="background:var(--sky)"></i>Meta</span><span><i></i>TikTok</span><span><i style="background:var(--amber);width:3px"></i>Today</span></div></div>' +
+        '<div class="tl"><div class="tl__axis"><span></span><div class="tl__months">' + months + '</div></div>' + lanes + '</div></section>';
+    }
+
+    function table(list, showArea) {
+      var sorted = list.slice().sort(function (a, b) { return b.spend - a.spend; });
+      var head = '<tr><th>Influencer</th>' + (showArea ? '<th>Area</th>' : '') + '<th>Platform</th><th>Dates</th><th>Status</th><th class="num">Spent</th><th class="num">Budget</th><th class="num">Impressions</th><th class="num">Clicks</th><th class="num">CTR%</th><th class="num">CPC</th></tr>';
+      var cells = function (t, platform) {
+        var st = status(t);
+        var over = t.budget > 0 && t.spend > t.budget * 1.02;
+        return '<td>' + esc(platform) + '</td><td>' + range(t) + '</td><td><span class="status status--' + st.cls + '"' + (st.tip ? ' title="' + esc(st.tip) + '"' : '') + '>' + st.label + '</span></td>' +
+          '<td class="num' + (over ? ' over' : '') + '"' + (over ? ' title="Over budget"' : '') + '>' + money(t.spend) + '</td><td class="num">' + (t.budget ? money(t.budget) : "None set") + '</td>' +
+          '<td class="num">' + int(t.impr) + '</td><td class="num">' + int(t.clicks) + '</td><td class="num">' + pct(t.ctr) + '</td><td class="num">' + (t.clicks ? money2(t.cpc) : "n/a") + '</td>';
+      };
+      var body = sorted.map(function (t) {
+        var main = '<tr class="main" data-person="' + esc(t.key) + '"><td><button type="button" class="rowlink" data-person="' + esc(t.key) + '">' + esc(t.key) + ICON.chev + '</button></td>' +
+          (showArea ? '<td><span class="tag tag--' + esc(t.area.toLowerCase()) + '">' + esc(t.area) + '</span></td>' : '') +
+          cells(t, t.platforms.join(" + "));
+        var subs = "";
+        return main + '</tr>' + subs;
+      }).join("");
+      var all = sum([].concat.apply([], list.map(function (t) { return t.rows; })));
+      var total = '<tr class="total"><td>Total</td>' + (showArea ? '<td></td>' : '') + '<td></td><td>' + range(all) + '</td><td></td>' +
+        '<td class="num">' + money(all.spend) + '</td><td class="num">' + money(all.budget) + '</td><td class="num">' + int(all.impr) + '</td><td class="num">' + int(all.clicks) + '</td><td class="num">' + pct(all.ctr) + '</td><td class="num">' + money2(all.cpc) + '</td></tr>';
+      return '<section class="card"><div><h2>All the numbers</h2><p class="card__desc">Biggest spend first. Click an influencer to open their page.</p></div>' +
+        '<div class="well"><table><thead>' + head + '</thead><tbody>' + body + total + '</tbody></table></div></section>';
+    }
+
+    function detail(view) {
+      var isAll = view === "influencers";
+      var area = isAll ? state.area : view;
+      var rows = rowsFor(area);
+      var list = people(rows);
+      var t = sum(rows);
+      var title = isAll ? "Performance by Influencer" : view === "buy" ? "Influencer Buy performance" : "Influencer Sell performance";
+      var sub = isAll
+        ? ""
+        : (view === "buy" ? "Influencers encouraging people to find their next car on carsales." : "Influencers encouraging people to sell their car on carsales.") + " " + list.length + " influencers, " + money(t.spend) + " spent.";
+      if (!rows.length) return '<h1 class="hero">' + title + '</h1><p class="sub">Nothing to show yet.</p>';
+      return '<h1 class="hero">' + title + '</h1>' + (sub ? '<p class="sub">' + sub + '</p>' : '') +
+        '<div class="swap" id="area-swap" style="display:flex;flex-direction:column;gap:22px">' +
+        roster(list, isAll) + ranking(list, isAll) + pacing(rows) + kpis(t) +
+        (isAll ? "" : platforms(rows) + timeline(rows)) +
+        table(list, isAll) + '</div>' +
+        '<p class="foot">' + through() + ' From the SupermetricsBlend_Influencer tab of the "Always On - Influencer Campaign Activity" sheet, leaving out Mid Year and Test campaigns. <a href="https:\/\/docs.google.com/spreadsheets/d/1dO-MGw1VsoHTxsPoi0g4eoomZoS5Y79Q7hXCzytb3Mo/edit" target="_blank" rel="noopener">Open the sheet</a></p>';
+    }
+
+    /* ---------- Render + navigation ---------- */
+    function html(view) { return view === "home" ? home() : view === "person" ? personPage(state.person) : detail(view); }
+
+    function paint(view, enterCls) {
+      var p = $("page");
+      p.className = "page" + (view === "home" ? " page--home" : "") + (enterCls ? " " + enterCls : "");
+      if (view === "home" && firstHome) { p.className += " intro"; firstHome = false; setTimeout(function () { p.classList.remove("intro"); }, 1800); }
+      p.innerHTML = html(view);
+      document.querySelectorAll("#nav [data-go]").forEach(function (b) {
+        if (b.getAttribute("data-go") === view) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current");
+      });
+      sizeTables();
+      updateAlerts();
+      document.title = view === "home" ? "Influencer performance" : p.querySelector(".hero").textContent + " | Influencer performance";
+    }
+
+    function openPerson(name) {
+      if (state.view !== "person") state.prev = state.view;
+      state.person = name;
+      go("person", true);
+    }
+    function go(view, force) {
+      if (view === state.view && !force) return;
+      var fwd = ORDER[view] > ORDER[state.view];
+      var p = $("page");
+      state.view = view; state.open = {};
+      p.classList.add(fwd ? "leave-fwd" : "leave-back");
+      setTimeout(function () {
+        window.scrollTo(0, 0);
+        paint(view, fwd ? "enter-fwd" : "enter-back");
+        setTimeout(function () { p.classList.remove("enter-fwd", "enter-back"); }, 420);
+      }, 200);
+    }
+
+    function soft(fn, id) {
+      var el = $(id);
+      if (!el) { fn(); paint(state.view); return; }
+      el.classList.add("out");
+      setTimeout(function () { fn(); paint(state.view); var n = $(id); if (n) { n.classList.add("out"); requestAnimationFrame(function () { n.classList.remove("out"); }); } }, 170);
+    }
+
+    document.addEventListener("click", function (e) {
+      var pb = e.target.closest("[data-person]");
+      if (pb) { openPerson(pb.getAttribute("data-person")); return; }
+      if (e.target.closest("[data-back]")) { go(state.prev || "influencers"); return; }
+      if (e.target.closest("[data-refresh]")) { refresh(); return; }
+      var ct = e.target.closest("[data-ctab]");
+      if (ct) {
+        var box = ct.closest(".cswitch"), n = ct.getAttribute("data-ctab");
+        box.querySelectorAll("[data-ctab]").forEach(function (b) { b.setAttribute("aria-pressed", String(b === ct)); });
+        box.querySelectorAll("[data-cpane]").forEach(function (p) { p.hidden = p.getAttribute("data-cpane") !== n; });
+        return;
+      }
+      var g = e.target.closest("[data-go]");
+      if (g) { go(g.getAttribute("data-go")); return; }
+      var s = e.target.closest("[data-sort]");
+      if (s) { var k = s.getAttribute("data-sort"); if (k !== state.sort) soft(function () { state.sort = k; }, "bars"); return; }
+      var a = e.target.closest("[data-area]");
+      if (a) { var v = a.getAttribute("data-area"); if (v !== state.area) soft(function () { state.area = v; state.open = {}; }, "area-swap"); return; }
+      if (!e.target.closest("#gloss") && !e.target.closest("#float")) closeGloss();
+      if (!e.target.closest("#alerts") && !e.target.closest("#alertBtn")) closeAlerts();
+    });
+
+    /* Notifications: possible errors first (red), then data updates. The bell turns red when there are errors. */
+    /* Equal-width table columns: count them, then pin the second column right after the first. */
+    function sizeTables() {
+      document.querySelectorAll(".well table").forEach(function (t) {
+        var ths = t.querySelectorAll("thead th");
+        t.style.setProperty("--cols", ths.length);
+        if (ths[0]) t.style.setProperty("--c1", ths[0].offsetWidth + "px");
+      });
+    }
+    window.addEventListener("resize", function () { sizeTables(); });
+    function updateAlerts() {
+      if (!DATA) return;
+      var bad = DATA.rows.filter(flagged);
+      var items = bad.map(function (r) {
+        return '<li class="note-item note-item--error"><span class="note-item__title">Possible errors</span><span><b>' + esc(r.name) + '</b> on ' + esc(r.platform) + '. ' + flagText(r) + '</span></li>';
+      });
+      items.push('<li class="note-item note-item--update"><span class="note-item__title">Data updated</span><span>' + through() + '</span></li>');
+      if (!bad.length) items.unshift('<li class="note-item note-item--ok"><span class="note-item__title">No errors</span><span>Every live campaign spent in the last day.</span></li>');
+      $("alerts").innerHTML = '<h3>Notifications</h3><ul class="notes">' + items.join("") + '</ul>';
+      var c = $("alertCount");
+      c.hidden = !bad.length; c.textContent = bad.length;
+      $("alertBtn").classList.toggle("float--alarm", bad.length > 0);
+      $("alertBtn").setAttribute("aria-label", bad.length ? bad.length + " possible error" + (bad.length > 1 ? "s" : "") : "Notifications");
+    }
+    function closeAlerts() { $("alerts").classList.remove("open"); $("alertBtn").setAttribute("aria-expanded", "false"); }
+    $("alertBtn").addEventListener("click", function () {
+      var open = !$("alerts").classList.contains("open");
+      closeGloss();
+      $("alerts").classList.toggle("open", open);
+      $("alertBtn").setAttribute("aria-expanded", String(open));
+    });
+    function closeGloss() { $("gloss").classList.remove("open"); $("float").setAttribute("aria-expanded", "false"); }
+    $("float").addEventListener("click", function () {
+      var open = !$("gloss").classList.contains("open");
+      closeAlerts();
+      $("gloss").classList.toggle("open", open);
+      $("float").setAttribute("aria-expanded", String(open));
+    });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape") { closeGloss(); closeAlerts(); } });
+    window.addEventListener("scroll", function () {
+      var solid = window.scrollY > 40 && document.documentElement.scrollHeight - window.innerHeight - window.scrollY > 120;
+      $("float").classList.toggle("solid", solid);
+      $("refreshBtn").classList.toggle("solid", solid);
+      $("alertBtn").classList.toggle("solid", solid);
+    }, { passive: true });
+
+    function normalise(d) {
+      (d.rows || []).forEach(function (r) { if (/facebook|meta/i.test(r.platform)) r.platform = "Meta"; });
+      return d;
+    }
+    function start(d) {
+      DATA = normalise(d);
+      paint("home");
+    }
+    /* Re-reads the sheet (inside Apps Script) and redraws the current view in place. */
+    function refresh() {
+      var b = document.querySelector("[data-refresh]");
+      if (b) { b.disabled = true; b.classList.add("busy"); }
+      var done = function (d) {
+        if (d) DATA = normalise(d);
+        if (b) { b.disabled = false; b.classList.remove("busy"); }
+        var y = window.scrollY;
+        paint(state.view);
+        window.scrollTo(0, y);
+      };
+      if (window.google && google.script && google.script.run) {
+        google.script.run.withSuccessHandler(done).withFailureHandler(function () { done(null); }).getData();
+      } else {
+        setTimeout(function () { done(null); }, 600);
+      }
+    }
+    if (window.google && google.script && google.script.run) {
+      google.script.run
+        .withSuccessHandler(start)
+        .withFailureHandler(function (err) {
+          $("page").innerHTML = '<p class="loading" style="color:var(--error);font-weight:700">Couldn’t load the sheet. Refresh the page, or check you have access to the sheet. (' + esc(err && err.message) + ')</p>';
+        })
+        .getData();
+    } else {
+      start(SAMPLE);
+    }
+  })();
+</script>
+</body>
+</html>
